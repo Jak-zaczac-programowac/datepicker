@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Datepicker</title>
+
+    <style>
+      body {
+        margin: 0;
+      }
+
+      .datepicker-wrapper {
+        border: 2px solid black;
+      }
+
+      .datepicker-header {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .current {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="datepicker-wrapper">
+      <div class="datepicker-header">
+        <div class="arrow-left"><</div>
+        <div class="year-picker">
+          <div class="current-month"></div>
+          <select name="" id=""></select>
+        </div>
+        <div class="arrow-right">></div>
+      </div>
+
+      <div class="datepicker-days">
+        <table>
+          <thead>
+            <tr>
+              <th>Niedziela</th>
+              <th>Poniedziałek</th>
+              <th>Wtorek</th>
+              <th>Środa</th>
+              <th>Czwartek</th>
+              <th>Piątek</th>
+              <th>Sobota</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="datepicker-footer">
+        <button>Submit</button>
+      </div>
+    </div>
+
+    <script>
+      function getNumberOfDaysPerMonth(monthIndex, year) {
+        return new Date(year, monthIndex + 1, 0).getDate();
+      }
+
+      function getDay(monthIndex, year, day) {
+        return new Date(year, monthIndex, day).getDay();
+      }
+
+      const datePickerWrapper = document.querySelector(".datepicker-wrapper");
+      const datePickerYears = document.querySelector(".year-picker select");
+      const leftArrow = document.querySelector(".arrow-left");
+      const rightArrow = document.querySelector(".arrow-right");
+      const currentMonthContainer = document.querySelector(
+        ".year-picker .current-month"
+      );
+      const datePickerDays = document.querySelector(
+        ".datepicker-days table tbody"
+      );
+
+      const currentDate = new Date();
+
+      // Renderowanie obecnego miesiąca
+      let currentYear = currentDate.getFullYear();
+      const currentDay = currentDate.getDate();
+      let currentMonth = currentDate.getMonth();
+
+      const monthTranslation = {
+        0: "Styczeń",
+        1: "Luty",
+        2: "Marzec",
+        3: "Kwiecień",
+        4: "Maj",
+        5: "Czerwiec",
+        6: "Lipiec",
+        7: "Sierpień",
+        8: "Wrzesień",
+        9: "Październik",
+        10: "Listopad",
+        11: "Grudzień",
+      };
+
+      // Renderowanie lat do wyboru
+
+      const years = 10;
+
+      for (let i = 0; i < years; i++) {
+        const option = document.createElement("option");
+        option.value = currentYear - i;
+        option.innerText = currentYear - i;
+        datePickerYears.appendChild(option);
+      }
+
+      function renderDaysForSelectedYearAndMonth(month, year) {
+        currentMonthContainer.innerText = monthTranslation[month];
+
+        // renderowanie tabelki z dniami
+        datePickerDays.innerHTML = "";
+        for (let i = 0; i < 6; i++) {
+          const row = document.createElement("tr");
+          for (let j = 0; j < 7; j++) {
+            const day = document.createElement("td");
+            row.appendChild(day);
+          }
+          datePickerDays.appendChild(row);
+        }
+
+        const numberOfDays = getNumberOfDaysPerMonth(month, year);
+        const firstDay = getDay(month, year, 1);
+        let cellIndex = firstDay + 1;
+        for (let i = 1; i <= numberOfDays; i++) {
+          const dayIndex = getDay(month, year, i);
+
+          const row = Math.ceil(cellIndex / 7);
+          cellIndex += 1;
+          if (dayIndex === 0) {
+          }
+          const cell = datePickerDays.querySelector(
+            `tr:nth-child(${row}) td:nth-child(${dayIndex + 1})`
+          );
+          if (!cell) {
+            debugger;
+          }
+
+          cell.innerText = i;
+
+          //   if (i === day) {
+          //     cell.classList.add("current");
+          //   }
+        }
+      }
+      renderDaysForSelectedYearAndMonth(currentMonth, currentYear);
+
+      datePickerYears.addEventListener("change", (e) => {
+        const year = parseInt(e.target.value, 10);
+        currentYear = year;
+        renderDaysForSelectedYearAndMonth(currentMonth, year);
+      });
+
+      leftArrow.addEventListener("click", () => {
+        currentMonth = currentMonth - 1;
+        renderDaysForSelectedYearAndMonth(currentMonth, currentYear);
+      });
+
+      rightArrow.addEventListener("click", () => {
+        currentMonth = currentMonth + 1;
+        renderDaysForSelectedYearAndMonth(currentMonth, currentYear);
+      });
+    </script>
+  </body>
+</html>
